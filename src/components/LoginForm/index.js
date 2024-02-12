@@ -1,6 +1,6 @@
 import {Component} from 'react'
 import {Redirect} from 'react-router-dom'
-
+import Cookies from 'js-cookie'
 import './index.css'
 
 class LoginForm extends Component {
@@ -21,8 +21,9 @@ class LoginForm extends Component {
 
   onSubmitSuccess = jwtToken => {
     const {history} = this.props
+    Cookies.set('jwt_token', jwtToken, {expires: 30})
 
-    return <Redirect to="/" />
+    history.replace('/')
   }
 
   onSubmitFailure = errorMsg => {
@@ -36,11 +37,11 @@ class LoginForm extends Component {
     const url = 'https://apis.ccbp.in/login'
     const options = {
       method: 'POST',
-      data: JSON.stringify(userDetails),
+      body: JSON.stringify(userDetails),
     }
     const response = await fetch(url, options)
     const data = await response.json()
-
+    console.log(response.ok)
     if (response.ok === true) {
       this.onSubmitSuccess(data.jwt_token)
     } else {
@@ -108,7 +109,7 @@ class LoginForm extends Component {
           className="login-img"
           alt="website login"
         />
-        <form className="form-container" onSumit={this.submitForm}>
+        <form className="form-container" onSubmit={this.submitForm}>
           <img
             src="https://assets.ccbp.in/frontend/react-js/nxt-trendz-logo-img.png"
             className="login-website-logo-desktop-img"
